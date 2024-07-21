@@ -6,3 +6,11 @@
     justify-content: center;
     gap: 16px;
 }
+
+.card div {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+}
