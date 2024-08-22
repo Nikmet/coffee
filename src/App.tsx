@@ -1,31 +1,45 @@
-import { Card, Checkbox, Input } from "antd";
+import { Button, Card, Input, Rate, Tag } from "antd";
 import "./App.css";
-import { useTodoStore } from "./model/todoStore";
-import { useState } from "react";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import { useCoffeeStore } from "./model/coffeeStore";
+import { useEffect, useState } from "react";
 
 function App() {
-    const { todoArray, add, check } = useTodoStore();
-    const [title, setTitle] = useState<string>("");
+    const { getCoffeeList, coffeeList } = useCoffeeStore();
+    const [text, setText] = useState<string | undefined>();
+
+    const handleSearch = (text: string) => {
+        getCoffeeList({ text });
+        setText(text);
+    };
+
+    useEffect(() => {
+        getCoffeeList();
+    }, []);
 
     return (
         <div className="wrapper">
             <Input
-                style={{ width: 300 }}
-                onChange={(e) => setTitle(e.target.value)}
-                value={title}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter" && title !== "") {
-                        add(title);
-                        setTitle("");
-                    }
-                }}
+                placeholder="Поиск"
+                onChange={(e) => handleSearch(e.target.value)}
+                value={text}
             />
-            {todoArray.map((todo, i) => (
-                <Card className="card">
-                    <span>{todo.title}</span>
-                    <Checkbox checked={todo.isCompleted} onChange={() => check(i)} />
-                </Card>
-            ))}
+            <div className="cardsContainer">
+                {coffeeList &&
+                    coffeeList.map((c) => (
+                        <Card
+                            key={c.id}
+                            cover={<img src={c.image} alt={c.name} />}
+                            actions={[<Button icon={<ShoppingCartOutlined />}>{c.price}</Button>]}
+                        >
+                            <Card.Meta title={c.name} description={c.subTitle} />
+                            <Tag color="purple" style={{ marginTop: 12 }}>
+                                {c.type}
+                            </Tag>
+                            <Rate defaultValue={c.rating} disabled allowHalf />
+                        </Card>
+                    ))}
+            </div>
         </div>
     );
 }
